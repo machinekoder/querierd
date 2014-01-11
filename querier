@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# Adapted from daemon.py by Sander Marachal
+# http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
+
+import sys, os, time, subprocess
+from ConfigParser import ConfigParser
+config_file = '/etc/querierd'
+
+def query_loop(interval, source_address):
+    """
+    Start a loop to send the packets using the nemesis program.
+    """
+    while True:
+        # Send a query to the all multicast address.
+        proc = subprocess.Popen(['/usr/local/bin/nemesis',
+                                 'igmp',
+                                 '-p', '17', # v1 query
+                                 '-i', '224.0.0.251',
+                                 '-S', source_address,
+                                 '-D', '224.0.0.1'],
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        output, error = proc.communicate()
+        time.sleep(0.1)
+        # Make sure we respond to our own query for mDNS.
+        proc = subprocess.Popen(['/usr/local/bin/nemesis',
+                                 'igmp',
+                                 '-p', '18', # v1 response
+                                 '-i', '224.0.0.251',
+                                 '-S', source_address,
+                                 '-D', '224.0.0.251'],
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        output, error = proc.communicate()
+        time.sleep(interval - 0.1)
+
+def main():
+    if os.getuid() != 0:
+        print 'The querierd daemon must be controlled by root.'
+        sys.exit(1)
+
+    config = ConfigParser()
+    config.read(config_file)
+    query_interval = int(config.get('querierd', 'query_interval'))
+    network = config.get('querierd', 'network')
+
+    ip = subprocess.Popen(['ip', 'route', 'get', network],
+                          stdout=subprocess.PIPE)
+    ip_result = ip.stdout.read().split()
+    source_address = ip_result[1 + ip_result.index('src')]
+    print 'querierd starting -- using address %s'%source_address
+    query_loop(query_interval, source_address)
+
+if __name__ == "__main__":
+    main()
