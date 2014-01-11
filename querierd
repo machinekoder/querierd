@@ -4,6 +4,8 @@
 
 import sys, os, time, atexit, subprocess
 from signal import SIGTERM 
+from ConfigParser import ConfigParser
+config_file = '/etc/queried'
 
 class QuerierDaemon:
 	"""
@@ -148,23 +150,25 @@ class QuerierDaemon:
                                          '-D', '224.0.0.251'])
                         time.sleep(self.interval)
 
-# Should get these from the config file ( /etc/querierd )
-
-pidfile = '/tmp/querierd.pid'
-query_interval = 60
-network = '192.168.0.0'
 
 if __name__ == "__main__":
         if os.getuid() != 0:
                 print 'The querierd daemon must be controlled by root.'
                 sys.exit(1)
 
+        config = ConfigParser()
+        config.read(config_file)
+        pidfile = config.get('querierd', 'pidfile')
+        query_interval = config.get('querierd', 'query_interval')
+        network = config.get('querierd', 'network')
+
         ip = subprocess.Popen(['ip', 'route', 'get', network], stdout=subprocess.PIPE)
         ip_result = ip.stdout.read().split()
         source_address = ip_result[1 + ip_result.index('src')]
 
 	daemon = QuerierDaemon(query_interval, source_address, pidfile)
-	if len(sys.argv) == 1:
+	
+        if len(sys.argv) == 1:
 		sys.argv.append('start')
 
 	if len(sys.argv) == 2:
