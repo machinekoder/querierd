@@ -79,7 +79,8 @@ class QuerierDaemon:
 			pid = None
 	
 		if pid:
-			message = "pidfile %s exists. Daemon already running?\n"
+			message = ("The file %s exists.\n"
+				   "Is querierd already running?\n")
 			sys.stderr.write(message % self.pidfile)
 			sys.exit(1)
 		
@@ -130,36 +131,48 @@ class QuerierDaemon:
                 Start a loop to send the packets with the nemesis program.
                 """
                 while True:
+			# Send a query to the all multicast address.
                         subprocess.call(['/usr/local/bin/nemesis',
                                          'igmp',
-                                         '-p', '17',
+                                         '-p', '17', # v1 query
                                          '-i', '224.0.0.251',
                                          '-S', source_address,
-                                         '-D', '224.0.0.1'])                   
+                                         '-D', '224.0.0.1'])
+                        time.sleep(0.1)
+			# Make sure we respond to our own query for mDNS.
+                        subprocess.call(['/usr/local/bin/nemesis',
+                                         'igmp',
+                                         '-p', '18', # v1 response
+                                         '-i', '224.0.0.251',
+                                         '-S', source_address,
+                                         '-D', '224.0.0.251'])
                         time.sleep(self.interval)
 
 # Should get these from the config file ( /etc/querierd )
 
 pidfile = '/tmp/querierd.pid'
-query_interval = 120
+query_interval = 60
 network = '192.168.0.0'
 
 if __name__ == "__main__":
         if os.getuid() != 0:
-                print 'The querierd daemon must be started by root.'
+                print 'The querierd daemon must be controlled by root.'
                 sys.exit(1)
 
         ip = subprocess.Popen(['ip', 'route', 'get', network], stdout=subprocess.PIPE)
         ip_result = ip.stdout.read().split()
         source_address = ip_result[1 + ip_result.index('src')]
-        print 'Using source address %s.'%source_address
 
 	daemon = QuerierDaemon(query_interval, source_address, pidfile)
+	if len(sys.argv) == 1:
+		sys.argv.append('start')
 
 	if len(sys.argv) == 2:
 		if 'start' == sys.argv[1]:
+			print 'Using source address %s.'%source_address
 			daemon.start()
 		elif 'stop' == sys.argv[1]:
+			print 'Stopping querierd.'
 			daemon.stop()
 		elif 'restart' == sys.argv[1]:
 			daemon.restart()
@@ -168,5 +181,5 @@ if __name__ == "__main__":
 			sys.exit(2)
 		sys.exit(0)
 	else:
-		print "usage: %s start|stop|restart" % sys.argv[0]
+		print "usage: %s [start|stop|restart]" % sys.argv[0]
 		sys.exit(2)
