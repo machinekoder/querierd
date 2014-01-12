@@ -30,6 +30,8 @@ sudo cp etc/querierd /etc/querierd
 sudo cp etc/init/querierd.conf /etc/init/querierd.conf
 
 * Don't forget to check the permissions!
+* If you are not using 192.168.0.0 as your private network address,
+  you will need to edit the network line in /etc/querierd
 
 If your system uses traditional sysv scripts:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -37,10 +39,11 @@ If your system uses traditional sysv scripts:
 sudo cp querierd /etc/init.d/querierd
 sudo cp etc/querierd /etc/querierd
 
+* Don't forget to check the permissions!
 * Use your favorite method to create the appropriate symlinks in
   the rc directories.
-
-* Don't forget to check the permissions!
+* If you are not using 192.168.0.0 as your private network address,
+  you will need to edit the network line in /etc/querierd
 
 Testing
 --------
