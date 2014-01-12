@@ -161,18 +161,7 @@ class QuerierDaemon:
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE)
             output, error = proc.communicate()
-            time.sleep(0.1)
-            # Make sure we respond to our own query for the mDNS group.
-            proc = subprocess.Popen(['/usr/local/bin/nemesis',
-                                     'igmp',
-                                     '-p', '18', # v1 response
-                                     '-i', '224.0.0.251',
-                                     '-S', self.source_address,
-                                     '-D', '224.0.0.251'],
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
-            output, error = proc.communicate()
-            time.sleep(self.interval - 0.1)
+            time.sleep(self.interval)
 
 if __name__ == "__main__":
     if os.getuid() != 0:
