@@ -1,0 +1,45 @@
+Installing querierd
+=====================
+
+This package contains two python scripts and some configuration files.
+WARNING: These scripts require that the nemesis packet injection tool
+be installed in /usr/local.  A separate package provides
+nemesis. Install it first.
+
+The script named querier is intended for use on systems (e.g. recent
+Ubuntu systems) which use upstart.  It is simply a loop which sleeps
+for a specified time interval and then sends an IGMP query packet to
+the multicast broadcast address.  When started by upstart, the script
+will be automatically "daemonized".
+
+The other script, named querierd, is intended to function as a
+standard sysv service script installed in /etc/init.d with appropriate
+symlinks in the rc directories.  It is a daemon, which does a double
+fork, and provides the usual start, stop and restart command line
+options.  The daemon process runs a loop which sleeps for a specified
+time interval and then sends an IGMP query packet.
+
+Instructions
+--------------
+
+If your system uses upstart:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sudo cp querier /usr/local/bin
+sudo cp etc/querierd /etc/querierd
+sudo cp etc/init/querierd.conf /etc/init/querierd.conf
+
+* Don't forget to check the permissions!
+
+If your system uses traditional sysv scripts:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sudo cp querierd /etc/init.d/querierd
+sudo cp etc/querierd /etc/querierd
+
+* Use your favorite method to create the appropriate symlinks in
+  the rc directories.
+
+* Don't forget to check the permissions!
+
+
