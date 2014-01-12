@@ -42,4 +42,24 @@ sudo cp etc/querierd /etc/querierd
 
 * Don't forget to check the permissions!
 
+Testing
+--------
 
+After starting the daemon by
+
+$ sudo start querierd  # upstart systems
+
+or
+
+$ sudo /etc/init.d/querierd start  # sysv systems
+
+you can run tcpdump and watch the IGMP traffic:
+
+$ sudo tcpdump -v -n -iwlan0 igmp
+
+(replace wlan0 by the appropriate interface on your computer).
+
+Also, you can run avahi-browse to check that all of your devices and
+services are visible:
+
+$ avahi-browse -at
