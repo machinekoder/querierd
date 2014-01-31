@@ -10,9 +10,10 @@ up my XXX device / service it works fine; all the devices can see it.
 But after a certain time, XXX disappears.  Other devices cannot see
 it."  A typical example is `Bug #657553
 <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=657553>`_
-which is being studiously ignored by the Debian avahi maintainers.
+which remains unresolved as of January 2014.
+
 When the avahi developers respond to these complaints, they usually
-just say it is not their fault and refer the plaintiff to `FAQ
+say it is not their fault and refer the plaintiff to `FAQ
 #15<http://avahi.org/wiki/Avah4users#FAQ>`_ which says "you most
 likely are experiencing trouble with a broken network driver or WLAN
 AP, which doesn't properly support IP multicasting."
