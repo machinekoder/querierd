@@ -1,16 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-### BEGIN QUERIERD INFO
-# Provides:           querierd
-# Required-Start:    2 3 4 5
-# Required-Stop:    1 6
-# Default-Start:      2 3 4 5
-# Default-Stop:      1 6
-# Short-Description: Emulate a multicast router so avahi will work.
-# Description: Sends an IGMP query packet at a specified interval.
-### END QUERIERD INFO
-
 # Copyright© 2014 by Marc Culler and others.
 # This code is adapted from daemon.py by Sander Marachal
 # http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/
