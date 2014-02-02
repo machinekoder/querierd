@@ -31,9 +31,11 @@
 # You should have received a copy of the GNU General Public License
 # along with QuerierD.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys, os, time, atexit, subprocess
+import sys, os, time, atexit, netifaces
 from signal import SIGTERM 
 from ConfigParser import ConfigParser
+from . import Querier
+
 config_file = '/etc/querierd'
 
 class QuerierDaemon:
@@ -167,20 +169,10 @@ class QuerierDaemon:
 
     def run(self):
         """
-        Start a loop to send the packets with the nemesis program.
+        Create a Querier and let it run.
         """
-        while True:
-            # Send a query to the all-multicast address.
-            proc = subprocess.Popen(['/usr/local/bin/nemesis',
-                                     'igmp',
-                                     '-p', '17', # v1 query
-                                     '-i', '224.0.0.251',
-                                     '-S', self.source_address,
-                                     '-D', '224.0.0.1'],
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE)
-            output, error = proc.communicate()
-            time.sleep(self.interval)
+        print 'querier service starting. Using address %s'%ip
+        Querier(self.source_address, self.interval).run()
 
 if __name__ == "__main__":
     if os.getuid() != 0:
@@ -190,20 +182,19 @@ if __name__ == "__main__":
     config = ConfigParser()
     config.read(config_file)
     pidfile = config.get('querierd', 'pidfile')
-    query_interval = config.get('querierd', 'query_interval')
-    network = config.get('querierd', 'network')
-
-    ip = subprocess.Popen(['ip', 'route', 'get', network],
-                          stdout=subprocess.PIPE)
-    ip_result = ip.stdout.read().split()
-    source_address = ip_result[1 + ip_result.index('src')]
-    
-    daemon = QuerierDaemon(query_interval, source_address, pidfile)
+    query_interval = int(config.get('querierd', 'query_interval'))
+    interface = config.get('querierd', 'interface')
+    try:
+        ip = netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
+    except ValueError:
+        raise ValueError(
+            'Interface %s not found. Please check %s .'%(interface, config_file)
+        )
+    daemon = QuerierDaemon(query_interval, ip, pidfile)
     
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
-            print 'querierd starting.'
-            print 'Source address is %s.'%source_address
+            print 'Querier daemon starting at %s.'%ip
             daemon.start()
         elif 'stop' == sys.argv[1]:
             print 'querierd stopping.'

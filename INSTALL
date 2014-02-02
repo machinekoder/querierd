@@ -1,39 +1,36 @@
-Installing querierd
+Installing QuerierD
 =====================
 
-This package contains two python scripts and some configuration files.
-WARNING: These scripts require that the nemesis packet injection tool
-be installed in /usr/local.  A separate package provides
-nemesis. Install it first.
+There are two steps to installing QuerierD.  First you need to
+install a python package named querier, as well as the package
+called netifaces which QuerierD uses.
 
-The script named querier is intended for use on systems (e.g. recent
-Ubuntu systems) which use upstart.  It is simply a loop which sleeps
-for a specified time interval and then sends an IGMP query packet to
-the multicast broadcast address.  When started by upstart, the script
-will be automatically "daemonized".
+If you have python setuptools installed, then the command
 
-The other script, named querierd, is intended to function as a
-standard sysv service script installed in /etc/init.d with appropriate
-symlinks in the rc directories.  It is a daemon, which does a double
-fork, and provides the usual start, stop and restart command line
-options.  The daemon process runs a loop which sleeps for a specified
-time interval and then sends an IGMP query packet.
+python setup.py install
 
-Instructions
---------------
+should install both packages, as needed.  If you don't have
+setuptools you will need to install netifaces separately.
+Step 1 may or may not require superuser permissions, depending
+on how your python installation is configured.
 
-If your system uses upstart:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 2 is to set up the querierd as a system service.  This
+involves copying a couple of files into your system /etc directory
+and must be done as root.  The details depend on your operating
+system.  Here are the details:
+
+Linux systems that use upstart (e.g. recent ubuntu systems):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 sudo cp querier /usr/local/bin
 sudo cp etc/querierd /etc/querierd
 sudo cp etc/init/querierd.conf /etc/init/querierd.conf
 
 * Don't forget to check the permissions!
-* If you are not using 192.168.0.0 as your private network address,
-  you will need to edit the network line in /etc/querierd
+* You will need to /etc/querierd to specify the IP interface that
+  your querier will use.  (Default is eth0).
 
-If your system uses traditional sysv scripts:
+Linux systems that use traditional sysv scripts:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 sudo cp querierd /etc/init.d/querierd
@@ -42,27 +39,32 @@ sudo cp etc/querierd /etc/querierd
 * Don't forget to check the permissions!
 * Use your favorite method to create the appropriate symlinks in
   the rc directories.
-* If you are not using 192.168.0.0 as your private network address,
-  you will need to edit the network line in /etc/querierd
+* You will need to /etc/querierd to specify the IP interface that
+  your querier will use.  (Default is eth0).
+
+OS X systems
+~~~~~~~~~~~~~~~~~~~~
+
+Coming ....
 
 Testing
 --------
 
 After starting the daemon by
 
-$ sudo start querierd  # upstart systems
-
-or
-
-$ sudo /etc/init.d/querierd start  # sysv systems
+$ sudo python -m querier.daemon start
 
 you can run tcpdump and watch the IGMP traffic:
 
-$ sudo tcpdump -v -n -iwlan0 igmp
+$ sudo tcpdump -nv -ieth0 igmp
 
-(replace wlan0 by the appropriate interface on your computer).
+(replace eth0 by the appropriate interface on your computer).
 
 Also, you can run avahi-browse to check that all of your devices and
 services are visible:
 
 $ avahi-browse -at
+
+To stop the daemon:
+
+$sudo python -m querier.daemon stop
