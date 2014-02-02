@@ -6,7 +6,7 @@
     <string>org.querierd</string>
     <key>ProgramArguments</key>
     <array>
-        <string>python</string>
+        <string>/Library/Frameworks/Python.framework/Versions/2.7/bin/python</string>
         <string>-m</string>
         <string>querier.service</string>
     </array>

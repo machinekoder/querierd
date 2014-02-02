@@ -15,37 +15,52 @@ Step 1 may or may not require superuser permissions, depending
 on how your python installation is configured.
 
 Step 2 is to set up the querierd as a system service.  This
-involves copying a couple of files into your system /etc directory
+involves copying a couple of files into your system directories,
 and must be done as root.  The details depend on your operating
 system.  Here are the details:
 
 Linux systems that use upstart (e.g. recent ubuntu systems):
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-sudo cp querier /usr/local/bin
-sudo cp etc/querierd /etc/querierd
-sudo cp etc/init/querierd.conf /etc/init/querierd.conf
+  FIRST: edit ./etc/querierd to specify the IP interface you want
+  your querier to use.  (Default is eth0).
 
-* Don't forget to check the permissions!
-* You will need to /etc/querierd to specify the IP interface that
-  your querier will use.  (Default is eth0).
+  THEN:
+  sudo cp etc/querierd /etc/querierd
+  sudo cp etc/init/querierd.conf /etc/init/querierd.conf
+
+  * Don't forget to check the permissions!
 
 Linux systems that use traditional sysv scripts:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-sudo cp querierd /etc/init.d/querierd
-sudo cp etc/querierd /etc/querierd
+  FIRST: edit ./etc/querierd to specify the IP interface you want
+  your querier to use.  (Default is eth0).
 
-* Don't forget to check the permissions!
-* Use your favorite method to create the appropriate symlinks in
-  the rc directories.
-* You will need to /etc/querierd to specify the IP interface that
-  your querier will use.  (Default is eth0).
+  THEN:
+  sudo cp etc/init.d/querierd /etc/init.d/querierd
+  sudo cp etc/querierd /etc/querierd
 
-OS X systems
-~~~~~~~~~~~~~~~~~~~~
+ * Don't forget to check the permissions!
+ * Use your favorite method to create the appropriate symlinks in
+   the rc directories.
 
-Coming ....
+OS X 
+~~~~
+
+  FIRST: edit ./etc/querierd to specify the IP interface you want
+  your querier to use.  (Default is eth0).
+
+  SECOND: edit ./Library/LaunchDaemons/org.querierd to use the
+  same python as you used to install the package.  (Default is
+  /Library/Frameworks/Python.framework/Versions/2.7/bin/python).
+
+  THEN:
+  sudo cp etc/querierd /etc/querierd
+  sudo cp Library/LaunchDaemons/org.querierd.plist /Library/LaunchDaemons
+
+  FINALLY: reboot
+
 
 Testing
 --------
