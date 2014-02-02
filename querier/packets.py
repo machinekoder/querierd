@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with QuerierD.  If not, see <http://www.gnu.org/licenses/>.
 
-import struct, socket, time
+import struct, socket, time, sys
 
 IGMP_type = {
     'query'    : 0x11,
@@ -25,6 +25,14 @@ IGMP_type = {
     'v2_report': 0x16,
     'v3_report': 0x22,
     'leave'    : 0x17}
+
+# OS X (and FreeBSD) require the length field of an IP packet to
+# be in **host order**.  (?????)
+
+if sys.platform == 'darwin' or sys.platform.startswith('freebsd'):
+    LENGTH = lambda x : socket.htons(x)
+else:
+    LENGTH = lambda x : x
 
 class Packet(object):
     """
@@ -35,6 +43,7 @@ class Packet(object):
         self.format = '!'+''.join([self.formats[f]
                                    for f in self.fields])
         self.length = self.hdr_length = struct.calcsize(self.format)
+        self.length = LENGTH(self.length)
 
     def __str__(self):
         self.compute_checksum()
@@ -60,8 +69,8 @@ class Packet(object):
     @data.setter
     def data(self, data):
         self._data = str(data)
-        self.length = self.hdr_length + len(self._data)
-
+        self.length = LENGTH(self.hdr_length + len(self._data))
+        
 class IGMPv2Packet(Packet):
     fields = ['_type', '_max_response_time', 'checksum', '_group']
     formats = {'_type':'B', '_max_response_time':'B', 'checksum':'H',
