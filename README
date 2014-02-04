@@ -106,9 +106,13 @@ Unfortunately, however, cheap home network routers like the ones that
 you and I buy do not provide an IGMP querier.  That is the reason
 that avahi and bonjour do not work on your network.
 
-The good news is that this problem is easy to fix, at least if you
-have a computer on your network which is always running.  All we need
-to do is run a little daemon on that computer which sends an IGMP
-query to the multicast broadcast address at regular intervals.  The
-querierd is such a daemon.  Once you start it up on your selected
-computer your devices will stop disappearing.
+The good news is that this problem is easy to fix.  All we need to do
+is run a little daemon which sends an IGMP query to the multicast
+broadcast address at regular intervals.  The querierd is such a
+daemon.  Once you start it up on your selected computer your devices
+will stop disappearing.
+
+The current version of querierd will participate in the
+querier election process, so you can run querierd daemons on several
+devices on your network, and they will cooperate with any routers
+which provide the querier service.

@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='querierd',
-      version=0.1,
+      version=0.2,
       description='IGMP querier service',
       author='Marc Culler',
       author_email='marc.culler@gmail.com',
