@@ -116,3 +116,6 @@ The current version of querierd will participate in the
 querier election process, so you can run querierd daemons on several
 devices on your network, and they will cooperate with any routers
 which provide the querier service.
+
+NOTE: A C implementation with similar functionality is available
+from Daniel Lorch: https://github.com/dlorch/igmp-querier
