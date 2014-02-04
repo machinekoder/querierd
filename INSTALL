@@ -3,14 +3,15 @@ Installing QuerierD
 
 There are two steps to installing QuerierD.  First you need to
 install a python package named querier, as well as the package
-called netifaces which QuerierD uses.
+netifaces, which QuerierD uses.
 
 If you have python setuptools installed, then the command
 
 python setup.py install
 
-should install both packages, as needed.  If you don't have
-setuptools you will need to install netifaces separately.
+should install both packages, as needed.  (Note, however, that
+installing netifaces may require a C compiler.) If you don't
+have setuptools you will need to install netifaces separately.
 Step 1 may or may not require superuser permissions, depending
 on how your python installation is configured.
 
@@ -43,7 +44,7 @@ Linux systems that use traditional sysv scripts:
 
  * Don't forget to check the permissions!
  * Use your favorite method to create the appropriate symlinks in
-   the rc directories.
+   the rc directories.  (e.g. update-rc.d querierd)
 
 OS X 
 ~~~~
