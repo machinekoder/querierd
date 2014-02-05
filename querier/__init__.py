@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with QuerierD.  If not, see <http://www.gnu.org/licenses/>.
 
-import socket, time, os, struct, threading, syslog
+import os, sys, socket, time, struct, threading, syslog, signal
 from .packets import IPv4Packet, IGMPv2Packet
 
 version = '0.1'
@@ -45,7 +45,11 @@ class Querier:
         self.build_query_packet()
         self.listener = None
         self.elected = True
+        self.stop = False
         syslog.openlog('querierd')
+        def sigterm_handler(signal, frame):
+            self.stop = True
+        signal.signal(signal.SIGTERM, sigterm_handler)
         
     def build_query_packet(self):
         igmp = IGMPv2Packet()
@@ -74,7 +78,15 @@ class Querier:
                 if elapsed > 2*self.interval:
                     syslog.syslog('Won querier election. Resuming.')
                     self.elected = True
+            if self.stop:
+                break
+            if not self.listener.thread.is_alive():
+                syslog.syslog('Listener thread died.  Quitting.')
+                sys.exit(1)
             time.sleep(self.interval)
+        self.socket.close()
+        syslog.syslog('Received SIGTERM.  Quitting.')
+        sys.exit(0)
 
 class QueryListener:
     """
