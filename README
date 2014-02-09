@@ -74,7 +74,7 @@ upstream router that it wants to subscribe to all groups which have at
 least one member among the nodes served by the switch.  If no device
 on a switch port does wants to belong to a certain group, then the
 switch will not forward any multicast packets for that group.  A key
-point is this: while IGMP v2 provides a way for a node to leave a
+point is this: while IGMP v2 provides a way for a device to leave a
 group, the switch cannot count on a device sending a leave request.
 First of all, the leave requests did not exist in IGMP v1, which the
 device may be using.  Secondly, the device might crash.  Therefore, a
@@ -92,17 +92,17 @@ multicast group.
 So now we see the problem.  The avahi or bonjour daemon on your device
 joins the mDNS multicast group when it starts up.  But it is not the
 job of the avahi-daemon to ensure that your device remains a member of
-the mDNS group.  That job is supposed to be handled automatically by the
-switches, routers and nodes on the network, using IGMP.  The reason
-your device disappears after a while is that the switch, probably a
-WAP, does not hear any subsequent IGMP join requests from your device.
-So, after a while, the switch stops forwarding any mDNS packets, and
-the device "disappears".
+the mDNS group.  That job is supposed to be handled automatically by
+the switches and routers on the network, using IGMP.  The reason your
+device disappears after a while is that a switch, probably your WAP,
+does not hear any subsequent IGMP join requests from your device.  So,
+after a while, the switch stops forwarding any mDNS packets, and the
+device "disappears".
 
 What can be done?
 ~~~~~~~~~~~~~~~~~~
 
-To understand how to deal with this we need to discuss on more feature
+To understand how to deal with this we need to discuss one more feature
 of the IGMP protocol and IGMP snooping.  In order for your device to
 remain a member of the mDNS group, it needs to periodically send a
 request (actually called a *report* in IGMP) to join the mDNS group
@@ -118,8 +118,8 @@ ports.  When a device receives a query packet it responds (after a
 random delay and subject to a countdown timer) by sending reports
 requesting to join all groups that it wants to belong to.
 
-Unfortunately, however, cheap home network routers like the ones that
-you and I buy do not provide an IGMP querier.  That is the reason
+Unfortunately, however, many cheap home network routers like the ones
+that you and I buy do not provide an IGMP querier.  That is the reason
 that avahi and bonjour do not work on your home network.
 
 The good news is that this problem is easy to fix.  All we need to do
