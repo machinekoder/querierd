@@ -57,8 +57,8 @@ your DNS or cable router, then your router needs to deliver the stream
 to the WAP.  But the WAP is most likely behaving as a switch, not a
 router.  So it is not supposed to be interpreting packets, just
 forwarding them to the devices connected to it.  If this rule were
-followed strictly, it would mean that every device connected to that
-WAP would receive the video stream, even if they are not watching
+followed strictly, it would mean that any device connected to that
+WAP would receive the video stream, even if it is not watching
 TV. And that video stream uses a substantial portion of the bandwidth
 available on the wireless link.  So innocent devices who are not
 watching TV would experience a significant slowdown.  To deal with
@@ -84,16 +84,16 @@ before the timeout expires; otherwise the switch will mark it as not
 belonging to the group and stop sending it packets for that group.
 
 But, you ask, what does this have to do with avahi or bonjour?  Well,
-first of all, those protocols use multicasting.  There is a multicast
-group for mDNS (the address is 224.0.0.251).  All of the communication
-related to avahi or bonjour uses multicast packets sent to this
-multicast group.
+it turns out that those protocols also use multicasting.  There is a
+multicast group for mDNS (the address is 224.0.0.251).  All of the
+communication related to avahi or bonjour uses multicast packets sent
+to this multicast group.
 
 So now we see the problem.  The avahi or bonjour daemon on your device
 joins the mDNS multicast group when it starts up.  But it is not the
 job of the avahi-daemon to ensure that your device remains a member of
 the mDNS group.  That job is supposed to be handled automatically by
-the switches and routers on the network, using IGMP.  The reason your
+the switches and routers on your network, using IGMP.  The reason your
 device disappears after a while is that a switch, probably your WAP,
 does not hear any subsequent IGMP join requests from your device.  So,
 after a while, the switch stops forwarding any mDNS packets, and the
@@ -102,21 +102,21 @@ device "disappears".
 What can be done?
 ~~~~~~~~~~~~~~~~~~
 
-To understand how to deal with this we need to discuss one more feature
-of the IGMP protocol and IGMP snooping.  In order for your device to
-remain a member of the mDNS group, it needs to periodically send a
-request (actually called a *report* in IGMP) to join the mDNS group
-before the switch decides to remove it from the group.  As explained
-in the Wikipedia page, the IGMP protocol deals with this by requiring
-that each network have a router which functions as an "IGMP querier".
-In order to avoid unnecessary network traffic, IGMP v2 specifies that
-this router should be "elected" by choosing the router with the lowest
-IP address.  The job of the querier is simply to send an IGMP *query
-packet* to the multicast broadcast address (224.0.0.1) every so often.
-Switches are required to forward the query packets to all of their
-ports.  When a device receives a query packet it responds (after a
-random delay and subject to a countdown timer) by sending reports
-requesting to join all groups that it wants to belong to.
+To understand how to deal with this we need to discuss one more
+feature of the IGMP protocol and IGMP snooping.  In order for your
+device to remain a member of the mDNS group, it needs to periodically
+send a request (actually called a *report* in IGMP) to join the mDNS
+group before the switch decides to remove it from the group.  As
+explained in the Wikipedia page, the IGMP protocol deals with this by
+requiring that each network have a router which functions as an "IGMP
+querier".  In order to avoid unnecessary network traffic, IGMP v2
+specifies that this router should be "elected" by choosing the router
+with the lowest IP address.  The job of the querier is simply to send
+an IGMP *query packet* to the multicast broadcast address (224.0.0.1)
+every so often.  Switches are required to forward the query packets to
+all of their ports.  When a device receives a query packet it responds
+(after a random delay and subject to a countdown timer) by sending
+reports requesting to join all groups that it wants to belong to.
 
 Unfortunately, however, many cheap home network routers like the ones
 that you and I buy do not provide an IGMP querier.  That is the reason
