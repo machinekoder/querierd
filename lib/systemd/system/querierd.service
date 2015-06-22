@@ -1,0 +1,8 @@
+# querierd - multicast querier for networks without a multicast router 
+
+[Unit]
+Description=Multicast querier daemon
+
+[Service]
+ExecStart=/usr/bin/python -m querier.service
+Restart=always

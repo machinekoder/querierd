@@ -20,7 +20,20 @@ involves copying a couple of files into your system directories,
 and must be done as root.  The details depend on your operating
 system.  Here are the details:
 
-Linux systems that use upstart (e.g. recent ubuntu systems):
+Linux systems that use systemd (e.g. recent Ubuntu systems after 14.10):
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  FIRST: edit ./etc/querierd to specify the IP interface you want
+  your querier to use.  (Default is eth0).
+
+  THEN:
+  sudo cp etc/querierd /etc/querierd
+  sudo cp lib/systemd/system/querierd.service /lib/systemd/system
+  sudo ln -s /lib/systemd/system/querierd.service /etc/systemd/system
+
+  * Don't forget to check the permissions!
+
+Linux systems that use upstart (e.g. Ubuntu systems prior to 15.04):
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   FIRST: edit ./etc/querierd to specify the IP interface you want
