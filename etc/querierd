@@ -1,5 +1,5 @@
 [querierd]
 query_interval=60
-interface=eth0
+interface=wlan0
 # The next item is ignored by the upstart script
 pidfile=/var/run/querierd.pid
