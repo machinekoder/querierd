@@ -2,6 +2,7 @@
 
 [Unit]
 Description=Multicast querier daemon
+After=syslog.target network.target
 
 [Service]
 ExecStart=/usr/bin/python -m querier.service

@@ -126,7 +126,7 @@ will cooperate with any routers or other querierd daemons, so only
 one of them will provide the querier service at a time.
 
 NOTE: A C implementation with similar functionality is available
-from Daniel Lorch: *igmp-querier* https://github.com/dlorch/igmp-querier.
+from Daniel Lorch: [igmp-querier](https://github.com/dlorch/igmp-querier)
 
 ## Installing QuerierD
 
@@ -136,7 +136,7 @@ netifaces, which QuerierD uses.
 
 If you have python setuptools installed, then the command
 
-    python setup.py install
+    sudo python setup.py install
 
 should install both packages, as needed.  (Note, however, that
 installing netifaces may require a C compiler.) If you don't
@@ -151,15 +151,25 @@ system.  Here are the details:
 
 ### Linux systems that use systemd (e.g. recent Ubuntu systems after 14.10):
 
+Copy the service file to the systemd directory:
 
-    FIRST: edit ./etc/querierd to specify the IP interface you want
-    your querier to use.  (Default is eth0).
-
-    THEN:
     sudo cp lib/systemd/system/querierd.service /lib/systemd/system
-    sudo ln -s /lib/systemd/system/querierd.service /etc/systemd/system
 
  * Don't forget to check the permissions!
+ * To change the IGMP broadcast interval add `-i <interval>` to the `querierd.service` file.
+
+The Systemd service is now ready to be configured:
+
+    sudo systemctl daemon-reload
+    sudo systemctl start querierd.service
+
+Wait a few seconds and check the status of the service:
+
+    sudo systemctl status querierd.service
+
+After you have approved that everything works fine its time to enable the service to be started at boot:
+
+    sudo systemctl enable querierd.service
 
 ## Testing
 
