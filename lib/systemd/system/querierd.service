@@ -7,3 +7,6 @@ After=syslog.target network.target
 [Service]
 ExecStart=/usr/bin/python -m querier.service
 Restart=always
+
+[Install]
+WantedBy=multi-user.target
