@@ -128,7 +128,17 @@ one of them will provide the querier service at a time.
 NOTE: A C implementation with similar functionality is available
 from Daniel Lorch: [igmp-querier](https://github.com/dlorch/igmp-querier)
 
-## Installing QuerierD
+## Easy install
+To simplify the installation a Makefile is provided with QuerierD. To
+install QuerierD run following command:
+
+    sudo make install
+
+To uninstall QuerierD run following command:
+
+    sudo make uninstall
+
+## Manual Installation of QuerierD
 
 There are two steps to installing QuerierD.  First you need to
 install a python package named querier, as well as the package
